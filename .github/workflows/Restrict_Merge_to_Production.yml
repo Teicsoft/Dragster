@@ -1,0 +1,24 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Restrict Merge to Production
+
+on:
+  pull_request:
+    branches: [ "Production" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  restrict-merge:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Check source branch
+          if: github.base_ref == 'Production' && github.head_ref != 'Staging'
+          run: |
+            echo "Only merges from the staging branch are allowed into production."
+            exit 1
+        - name: Allow merge
+          if: github.base_ref == 'Production' && github.head_ref == 'Staging'
+          run: echo "Merge allowed from staging to production."
